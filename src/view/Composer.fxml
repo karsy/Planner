@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fx:id="composerRoot" fitToWidth="true" hbarPolicy="NEVER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="345.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="calendar.NoteComposer">
+    <content>
+        <VBox fx:id="noteContainer" fillWidth="false" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox alignment="CENTER" prefHeight="43.0" prefWidth="342.0" spacing="4.0">
+                    <children>
+                        <Label text="Notater for:" />
+                        <Label fx:id="dayLabel" text="I dag">
+                     <HBox.margin>
+                        <Insets right="6.0" />
+                     </HBox.margin></Label>
+                        <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#createEmptyNote" text="Nytt notat" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </content>
+    <padding>
+        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+    </padding>
+</ScrollPane>

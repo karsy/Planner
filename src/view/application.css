@@ -1,0 +1,44 @@
+.split-pane-divider {
+	-fx-cursor: null;
+}
+
+* {
+	-fx-font-family: "Lucida Grande";
+}
+
+.font30 {
+	-fx-font-size: 30px;
+}
+
+.font24 {
+	-fx-font-size: 24px;
+}
+
+.dayContainer {
+	-fx-border-color: black;
+	-fx-border-radius: 5px;
+}
+
+#today {
+	-fx-background-radius: 5px;
+	-fx-background-color: deepskyblue;
+}
+
+.notCurrentMonth {
+	-fx-background-radius: 5px;
+	-fx-background-color: grey;
+}
+
+.sunday {
+	-fx-background-radius: 5px;
+	-fx-background-color: red;
+}
+
+.chosenDate {
+	-fx-background-radius: 5px;
+	-fx-background-color: cyan;
+}
+
+ScrollPane {
+	-fx-background-color: transparent;
+}

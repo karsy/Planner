@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.web.*?>
+
+<AnchorPane fx:id="radioRoot" maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="radio.Radio">
+	<children>
+		<HBox prefHeight="100.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<children>
+				<WebView fx:id="radioContainer" prefHeight="138.0" prefWidth="1278.0" />
+				<MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" />
+			</children>
+		</HBox>
+	</children>
+</AnchorPane>
