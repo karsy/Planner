@@ -1,6 +1,7 @@
 package radio;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Slider;
@@ -20,7 +21,7 @@ public class Radio implements Runnable {
 	private static final File channelFile = new File("src/radio/channels.txt");
 	private static final FileResetter resetter = new FileResetter();
 
-	private HashMap<Integer, HashMap<String, String>> channels = new HashMap<>();
+	private HashMap<Integer, Channel> channels = new HashMap<>();
 	private int channelID = 0;
 	private URL audioStreamURL;
 	private InputStream audioStream;
@@ -60,9 +61,12 @@ public class Radio implements Runnable {
 			int id = 0;
 			String in;
 			while ((in = b.readLine()) != null) {
-				HashMap<String, String> channel = new HashMap<>();
-				channel.put("name", in);
-				channel.put("url", b.readLine());
+				if (in.startsWith("#")) {
+					continue;
+				}
+
+				String[] info = in.split(",");
+				Channel channel = new Channel(info[0], info[1], Double.parseDouble(info[2]), Double.parseDouble(info[3]));
 				channels.put(id++, channel);
 			}
 		} catch (IOException e) {
@@ -109,14 +113,14 @@ public class Radio implements Runnable {
 
 	}
 
-	public void playChannel(String url) {
+	public void playChannel(Channel channel) {
 		try {
 			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-			g.drawImage(image, channelID % 2 == 0 ? 0 : 160, 0, 160, 70, 0, 0, 160, 70);
+			g.drawImage(image, channel.imagePos.getX() * 160, channel.imagePos.getY() * 70, 160, 70, 0, 0, 160, 70);
 
 			pauseRadio();
 
-			audioStreamURL = new URL(url);
+			audioStreamURL = new URL(channel.url);
 			streamClosed = false;
 
 			radioThread = new Thread(this, "radioThread");
@@ -164,19 +168,19 @@ public class Radio implements Runnable {
 
 	@FXML
 	private void playRadio() {
-		playChannel(channels.get(channelID).get("url"));
+		playChannel(channels.get(channelID));
 	}
 
 	@FXML
 	private void previousChannel() {
 		channelID = channelID == 0 ? channels.size() - 1 : channelID - 1;
-		playChannel(channels.get(channelID).get("url"));
+		playChannel(channels.get(channelID));
 	}
 
 	@FXML
 	private void nextChannel() {
 		channelID = channelID == channels.size() ? 0 : channelID + 1;
-		playChannel(channels.get(channelID).get("url"));
+		playChannel(channels.get(channelID));
 	}
 
 	public void createAudioFile() {
@@ -214,5 +218,16 @@ public class Radio implements Runnable {
 
 	public AnchorPane getRootNode() {
 		return radioRoot;
+	}
+
+	private class Channel {
+		private String name, url;
+		private Point2D imagePos;
+
+		Channel(String name, String url, Double x, Double y) {
+			this.name = name;
+			this.url = url;
+			this.imagePos = new Point2D(x, y);
+		}
 	}
 }
