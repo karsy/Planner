@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import radio.Radio;
 
 public class Main extends Application {
 	
@@ -19,7 +18,7 @@ public class Main extends Application {
 	    primaryStage.setOnCloseRequest((event) -> {
 			if (event.getEventType() == WindowEvent.WINDOW_CLOSE_REQUEST) {
 				Database.closeConnection();
-				Radio.getRadio().cleanUp();
+				Controller.getRadio().cleanUp();
 			}
 		});
 

@@ -1,9 +1,11 @@
 package radio;
 
+import application.Controller;
+
 /**
  * Created by Vegard on 14.07.14.
  */
-public class FileResetter implements Runnable{
+public class FileResetter implements Runnable {
 
 	private static boolean interrupted = false;
 
@@ -18,7 +20,9 @@ public class FileResetter implements Runnable{
 		}
 
 		if (!interrupted) {
-			Radio radio = Radio.getRadio();
+			Radio radio = Controller.getRadio();
+			radio.pauseRadio();
+			radio.createAudioFile();
 			radio.playChannel(radio.getAudioStreamURL().toString());
 		}
 	}

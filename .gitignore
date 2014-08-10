@@ -16,3 +16,5 @@ planner/
 .idea/
 bin/
 derby.log
+src/web/
+audio.mp3
