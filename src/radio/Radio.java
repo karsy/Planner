@@ -7,9 +7,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.shape.SVGPath;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -26,9 +28,9 @@ public class Radio implements Runnable {
 	private URL audioStreamURL;
 	private InputStream audioStream;
 	private FileOutputStream fos;
-	private File audioFile;
+	private File audioFile = new File("audio.mp3");
 	private Thread radioThread, resetThread;
-	private boolean streamClosed = false, readyToPlay = false;
+	private boolean streamClosed = false, readyToPlay = false, resetFile = false;
 
 	@FXML
 	private MediaView radioView;
@@ -39,6 +41,15 @@ public class Radio implements Runnable {
 	private Slider volumeSlider;
 
 	@FXML
+	private HBox radioContainer;
+
+	@FXML
+	private SVGPath playButton;
+
+	@FXML
+	private SVGPath pauseButton;
+
+	@FXML
 	private Canvas canvas;
 	private GraphicsContext g;
 	private Image image = new Image("radio/ikoner.png");
@@ -47,11 +58,7 @@ public class Radio implements Runnable {
 	private AnchorPane radioRoot;
 
 	public Radio() {
-		audioFile = new File("audio.mp3");
-		if (audioFile.exists()) {
-			audioFile.delete();
-		}
-
+		createAudioFile();
 		readChannelFile();
 	}
 
@@ -69,6 +76,7 @@ public class Radio implements Runnable {
 				Channel channel = new Channel(info[0], info[1], Double.parseDouble(info[2]), Double.parseDouble(info[3]));
 				channels.put(id++, channel);
 			}
+			b.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,9 +90,12 @@ public class Radio implements Runnable {
 			}
 		});
 
-		g = canvas.getGraphicsContext2D();
+		radioContainer.getChildren().remove(pauseButton);
+
 		canvas.setWidth(160.0);
 		canvas.setHeight(70.0);
+		g = canvas.getGraphicsContext2D();
+		g.drawImage(image, 0, 0, 160, 70, 0, 0, 160, 70);
 	}
 
 	@Override
@@ -103,7 +114,7 @@ public class Radio implements Runnable {
 
 			readyToPlay = true;
 
-			while (!streamClosed && (next = audioStream.read()) != -1) {
+			while (!streamClosed && (next = audioStream.read()) != -1 && !resetFile) {
 				fos.write(next);
 				fos.flush();
 			}
@@ -119,6 +130,11 @@ public class Radio implements Runnable {
 			g.drawImage(image, channel.imagePos.getX() * 160, channel.imagePos.getY() * 70, 160, 70, 0, 0, 160, 70);
 
 			pauseRadio();
+
+			if (radioContainer.getChildren().contains(playButton)) {
+				radioContainer.getChildren().remove(playButton);
+				radioContainer.getChildren().add(3, pauseButton);
+			}
 
 			audioStreamURL = new URL(channel.url);
 			streamClosed = false;
@@ -146,8 +162,18 @@ public class Radio implements Runnable {
 		audio = new Media(audioFile.toURI().toString());
 		radioPlayer = new MediaPlayer(audio);
 		radioView.setMediaPlayer(radioPlayer);
+		radioPlayer.setOnEndOfMedia(endOfMediaListener);
 		radioPlayer.play();
+		radioPlayer.setVolume(volumeSlider.getValue());
 	}
+
+	private Runnable endOfMediaListener = () -> {
+		if (resetFile) {
+			resetFile = false;
+			Radio.this.createAudioFile();
+			Radio.this.playChannel(channels.get(channelID));
+		}
+	};
 
 	@FXML
 	public void pauseRadio() {
@@ -163,6 +189,11 @@ public class Radio implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+
+		if (radioContainer.getChildren().contains(pauseButton)) {
+			radioContainer.getChildren().remove(pauseButton);
+			radioContainer.getChildren().add(3, playButton);
 		}
 	}
 
@@ -200,7 +231,7 @@ public class Radio implements Runnable {
 			streamClosed = true;
 			if (fos != null && audioStream != null && radioThread != null && resetThread != null) {
 				resetThread.interrupt();
-				resetThread.join();
+				resetThread.join(0);
 				radioThread.join(0);
 				fos.flush();
 				fos.close();
@@ -212,12 +243,12 @@ public class Radio implements Runnable {
 		}
 	}
 
-	public URL getAudioStreamURL() {
-		return audioStreamURL;
-	}
-
 	public AnchorPane getRootNode() {
 		return radioRoot;
+	}
+
+	public void setResetFile(boolean resetFile) {
+		this.resetFile = resetFile;
 	}
 
 	private class Channel {

@@ -7,11 +7,9 @@ import application.Controller;
  */
 public class FileResetter implements Runnable {
 
-	private static boolean interrupted = false;
-
 	@Override
 	public void run() {
-		interrupted = false;
+		boolean interrupted = false;
 
 		try {
 			Thread.sleep(1000 * 60 * 30); // Reset every 30 min
@@ -20,10 +18,7 @@ public class FileResetter implements Runnable {
 		}
 
 		if (!interrupted) {
-			Radio radio = Controller.getRadio();
-			radio.pauseRadio();
-			radio.createAudioFile();
-			radio.playChannel(radio.getAudioStreamURL().toString());
+			Controller.getRadio().setResetFile(true);
 		}
 	}
 }

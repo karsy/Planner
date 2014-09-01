@@ -110,7 +110,6 @@ public class Calendar {
 				days[index].setText(String.valueOf(currentDay.getDayOfMonth()));
 				days[index].setOnMousePressed(handleLabelClick);
 
-				// Faster than streams on my computer
 				int amountOfNotes = 0;
 				for (Note note : notes) {
 					if (note.getDate().getDayOfYear() == currentDay.getDayOfYear() && note.getDate().getYear() == currentDay.getYear()) {
